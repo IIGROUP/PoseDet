@@ -26,6 +26,7 @@ from PoseDet import losses
 from PoseDet import pipelines
 from PoseDet import roi_heads
 # python -m torch.distributed.launch --nproc_per_node=4  tools/train.py --launcher pytorch
+# ps x |grep python|awk '{print $1}'|xargs kill  
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
     parser.add_argument('--config', default=None, help='train config file path')
