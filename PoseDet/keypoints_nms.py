@@ -1,14 +1,9 @@
 import torch
-
 # from mmdet.ops.nms import batched_nms
-from mmdet.ops.nms import nms_ext
-
-import torch
+# from mmdet.ops.nms import nms_ext
 import time
 
-def keypoints_nms(
-                    # multi_bboxes,
-                   multi_scores,
+def keypoints_nms(multi_scores,
                    score_thr,
                    nms_cfg,
                    max_num=-1,
@@ -16,7 +11,8 @@ def keypoints_nms(
                    multi_poses=None,
                    num_points=9,
                    ):
-    
+    #multi_poses： Tensor[N, num_points*3+1], 1是score channel
+
     num_classes = multi_scores.size(1) - 1
 
     pointsets = multi_poses[:, None].expand(-1, num_classes, num_points*3)
@@ -28,6 +24,7 @@ def keypoints_nms(
     pointsets = pointsets[valid_mask]
 
     scores = scores[valid_mask]
+
     labels = valid_mask.nonzero()[:, 1]
 
     if pointsets.numel() == 0:
@@ -42,7 +39,7 @@ def keypoints_nms(
         dets = dets[:max_num]
         keep = keep[:max_num]
     
-    #dets: Tenosr[N, num_points*2 + 1(score)]
+    #dets: Tenosr[N, num_points*3 + 1(score)]
     return dets, labels[keep]
 
 
@@ -77,10 +74,11 @@ def oks_nms(dets, iou_thr, device_id=None):
     return dets[inds, :], inds
 
 def _oks_nms(dets, thresh):
-    # pointsets:(m, points_num*2)  thresh:scaler
     sigmas = torch.tensor([.26, .25, .25, .35, .35, .79, .79, .72, .72, .62,.62, 1.07, 1.07, .87, .87, .89, .89], device=dets.device)/10.0
     vars = (sigmas * 2)**2
     vars = vars.unsqueeze(0).unsqueeze(0) #[1, 1, 17]
+
+    #get pointsets from dets, which are [N, num_points*2], where each pointset is [x1, y1, x2, y2...]
     pointsets = dets[:,:-1]
     pointsets = pointsets.view((pointsets.size()[0], -1, 3))
     pointsets = pointsets[:,:,:2]
@@ -88,7 +86,6 @@ def _oks_nms(dets, thresh):
     w_all = torch.max(pointsets[:,:,0], dim=1)[0] - torch.min(pointsets[:,:,0], dim=1)[0]
     h_all = torch.max(pointsets[:,:,1], dim=1)[0] - torch.min(pointsets[:,:,1], dim=1)[0]
     areas = w_all*h_all
-    # areas = areas.clamp(1e-6)
     areas = areas.clamp(32*32)
     areas = (areas.unsqueeze(0)+areas.unsqueeze(1))/2
     areas = areas.unsqueeze(-1) #[points_num, points_num, 1]
@@ -97,10 +94,6 @@ def _oks_nms(dets, thresh):
     oks = torch.exp(-distance/vars/areas).mean(dim=-1)
 
     scores = dets[:,-1]
-
-    #overlaping score
-    # overlaping_score = oks.sum(dim=0)
-    # scores = (overlaping_score + scores) / 2
 
     keep = []
     index = scores.sort(descending=True)[1]  
@@ -117,7 +110,8 @@ def _oks_nms(dets, thresh):
 
     keep = torch.stack(keep)    
     return keep
-
+    
+'''
 def _oks_fast_nms(dets, thresh):
 # def _oks_fast_nms(dets, thresh, pointsets):
     # torch.cuda.synchronize()
@@ -169,3 +163,5 @@ def _oks_fast_nms(dets, thresh):
     keep = index[keep]
 
     return keep
+
+'''
