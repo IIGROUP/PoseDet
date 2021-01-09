@@ -58,7 +58,7 @@ exp_name = 'PoseDet_test' # init conv=2, cls conv=3, refine conv=2
 # Data - crop, w/o crow; Init/Refine - point_loss_single.sum(),weight=.1/.2; dla34 channel=128
 # exp_name = 'PoseDet_dla34_heatmap_ml3' # heatmap w/o concat, with_sigma=False, 增加sclae gaussian
 
-exp_name = 'PoseDet_dla34c128' #
+exp_name = 'PoseDet_dla34c128' # t
 
 work_dir = './output/' + exp_name
 
