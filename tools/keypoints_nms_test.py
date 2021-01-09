@@ -2,6 +2,8 @@ import torch
 import numpy as np
 import os
 from time import time
+
+#Input: dets Tensor[N, numkeypoints*3+score]
 def _oks_nms(dets, thresh=0.2):
     sigmas = torch.tensor([.26, .25, .25, .35, .35, .79, .79, .72, .72, .62,.62, 1.07, 1.07, .87, .87, .89, .89], device=dets.device)/10.0
     vars = (sigmas * 2)**2
@@ -40,27 +42,40 @@ def _oks_nms(dets, thresh=0.2):
     keep = torch.stack(keep)    
     return keep
 
-def load_results(file_path):
+def load_results(file_path, device='gpu'):
     results = np.load(file_path)
-    results = torch.from_numpy(results).cuda()
+    if device=='gpu':
+        results = torch.from_numpy(results).cuda()
+    elif device=='cpu':
+        results = torch.from_numpy(results)
     return results
 
 def main():
+    #Tow prepredicted-result sets
+    #1. ./debug_img' (with score>0.05)
+    #2. ./debug_img2' (with score>0.01)
     results_path = './debug_img'
+    # results_path = './debug_img2'
+
+    device = 'gpu' # device to run nms, 'gpu' or 'cpu'
+    # device = 'cpu' 
+
     file_names = os.listdir(results_path)
+    #record information
     total_candidates = 0
     warm_up = 100
     time_count = 0
     num_count = 0
     for i, file_name in enumerate(file_names):
+        #load results
         file_path = os.path.join(results_path, file_name)
-        results = load_results(file_path)
+        results = load_results(file_path, device=device)
         num_cadidates = results.size()[0]
 
         torch.cuda.synchronize()
         t1 = time()
 
-        keep = _oks_nms(results)
+        keep = _oks_nms(results) #run keypoints nms
 
         torch.cuda.synchronize()
         t2 = time()    
@@ -70,9 +85,10 @@ def main():
             num_count += 1
             total_candidates += num_cadidates
 
-    print('Average time (ms) %.2f'%(time_count/num_count*1000))
+    print('Average inference time (ms) %.2f'%(time_count/num_count*1000))
     print('Total images', num_count)
     print('Total candidates', total_candidates)
+    print('Average candidates per image', total_candidates/num_count)
 
 
 if __name__ == '__main__':
