@@ -63,6 +63,16 @@ def oks_nms(dets, iou_thr, device_id=None):
         # torch.cuda.synchronize()
         # t1 = time.time()
         inds = _oks_nms(dets_th, iou_thr)
+
+        # import os
+        # import numpy as np 
+        # dets_np = dets_th.detach().cpu().numpy()
+        # for i in range(501):
+        #     path = './debug_img/%d.npy'%i
+        #     if not os.path.exists(path):
+        #         np.save(path, dets_np)
+        #         break
+        
         # inds = _oks_fast_nms(dets_th, iou_thr)
 
         # torch.cuda.synchronize()
