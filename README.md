@@ -25,7 +25,7 @@ pip install mmcv==0.6.2
 git clone **
 cd mmdetection
 pip install -r requirements/build.txt
-pip install "git+https://github.com/open-mmlab/cocoapi.git#subdirectory=pycocotools"
+pip install "git+https://github.com/open-mmlab/cocoapi.git#subdirectory=pycocotools" --user
 python setup.py develop
 ```
 
