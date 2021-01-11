@@ -35,7 +35,7 @@
 # dataset_type = 'CocoDataset'
 # dataset_type = 'CocoSegmentation'
 dataset_type = 'CocoKeypoints'
-
+#
 data_root = '/data/ly/coco/'
 
 annotation_file_train = 'annotations/person_keypoints_train2017.json'
