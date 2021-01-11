@@ -22,7 +22,7 @@ train_pipeline = [
     dict(type='RandomFlip', flip_ratio=0.5, with_keypoints=True, gt_num_keypoints=17),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
-    dict(type='GaussianMap', sigma=7.0, num_keypoints=17, pos_weight=1, SCALE=True, scale_factor=100),
+    dict(type='GaussianMap', strides=[8,16,32,64], num_keypoints=17, sigma=2),
     dict(type='FormatBundleKeypoints'),
     dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels', 
                                 'gt_keypoints', 'gt_num_keypoints',

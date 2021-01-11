@@ -33,8 +33,8 @@ class PoseDetHeadHeatMapMl(PoseDetHead):
         self.heatmap_pre_convs = nn.ModuleList()
 
         for i in range(self.init_convs):
-            # chn = self.in_channels if i == 0 else self.feat_channels
-            chn = self.in_channels + self.num_keypoints if i == 0 else self.feat_channels
+            chn = self.in_channels if i == 0 else self.feat_channels
+            # chn = self.in_channels + self.num_keypoints if i == 0 else self.feat_channels
             self.init_pre_convs.append(
                 ConvModule(
                     chn,
@@ -46,8 +46,8 @@ class PoseDetHeadHeatMapMl(PoseDetHead):
                     norm_cfg=self.norm_cfg))
 
         for i in range(self.cls_convs):
-            # chn = self.in_channels if i == 0 else self.feat_channels
-            chn = self.in_channels + self.num_keypoints if i == 0 else self.feat_channels
+            chn = self.in_channels if i == 0 else self.feat_channels
+            # chn = self.in_channels + self.num_keypoints if i == 0 else self.feat_channels
             self.cls_pre_convs.append(
                 ConvModule(
                     chn,
@@ -59,8 +59,8 @@ class PoseDetHeadHeatMapMl(PoseDetHead):
                     norm_cfg=self.norm_cfg))
 
         for i in range(self.refine_convs):
-            # chn = self.in_channels if i == 0 else self.feat_channels
-            chn = self.in_channels + self.num_keypoints if i == 0 else self.feat_channels
+            chn = self.in_channels if i == 0 else self.feat_channels
+            # chn = self.in_channels + self.num_keypoints if i == 0 else self.feat_channels
             self.refine_pre_convs.append(
                 ConvModule(
                     chn,
@@ -143,7 +143,7 @@ class PoseDetHeadHeatMapMl(PoseDetHead):
 
         dcn_base_offset = self.dcn_base_offset.type_as(x)
 
-        x = torch.cat((x, heatmap), dim=1)
+        # x = torch.cat((x, heatmap), dim=1)
 
         #fusion
         # attention = heatmap.detach().sigmoid().max(dim=1, keepdim=True)[0]
@@ -230,12 +230,9 @@ class PoseDetHeadHeatMapMl(PoseDetHead):
                                                              gt_keypoints,
                                                              gt_num_keypoints)
         # loss_dict_all['loss_keypoints_init'] = loss_keypoints_init
-        heatmap_loss = torch.zeros(1, device=heatmap.device)
-        for heatmap_pred in heatmap_pred_list:
-            heatmap_stride = torch.nn.functional.interpolate(heatmap, heatmap_pred.size()[-2:], mode='nearest')
-            heatmap_weight_stride = torch.nn.functional.interpolate(heatmap_weight, heatmap_pred.size()[-2:])
-
-            heatmap_loss += self.loss_heatmap(heatmap_pred, heatmap_stride, heatmap_weight_stride)
+        heatmap_loss = torch.zeros(1, device=heatmap[0].device)
+        for i, heatmap_pred in enumerate(heatmap_pred_list):
+            heatmap_loss += self.loss_heatmap(heatmap_pred, heatmap[i], heatmap_weight[i])
 
         loss_dict_all['heatmap_loss'] = heatmap_loss/len(heatmap_pred_list)
         return loss_dict_all

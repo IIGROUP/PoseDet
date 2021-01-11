@@ -88,18 +88,14 @@ class FormatBundleKeypoints(object):
             results['img'] = DC(to_tensor(img), stack=True)
             
         if 'heatmap' in results:
-            heatmap = results['heatmap']
-            if len(heatmap.shape) < 3:
-                heatmap = np.expand_dims(heatmap, -1)
-            heatmap = np.ascontiguousarray(heatmap.transpose(2, 0, 1))
-            results['heatmap'] = DC(to_tensor(heatmap), stack=True)
+            GaussianMap_list = results['heatmap']
+            for i in range(len(GaussianMap_list)):
+                GaussianMap_list[i] = DC(to_tensor(GaussianMap_list[i]), stack=True)
 
         if 'heatmap_weight' in results:
-            heatmap_weight = results['heatmap_weight']
-            if len(heatmap_weight.shape) < 3:
-                heatmap_weight = np.expand_dims(heatmap_weight, -1)
-            heatmap_weight = np.ascontiguousarray(heatmap_weight.transpose(2, 0, 1))
-            results['heatmap_weight'] = DC(to_tensor(heatmap_weight), stack=True)
+            heatmap_weight_list = results['heatmap_weight']
+            for i in range(len(heatmap_weight_list)):
+                heatmap_weight_list[i] = DC(to_tensor(heatmap_weight_list[i]), stack=True)
             
         for key in ['proposals', 'gt_bboxes', 'gt_bboxes_ignore', 'gt_labels', 'gt_keypoints', 'gt_num_keypoints']:
             if key not in results:
