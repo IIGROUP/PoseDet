@@ -1,1 +1,2 @@
 from .coco_keypoints import CocoKeypoints
+from .crowpose_keypoints import CrowdPoseKeypoints
