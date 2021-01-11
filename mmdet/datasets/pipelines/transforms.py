@@ -254,7 +254,7 @@ class RandomFlip(object):
         keypoints_np[:,:,0] = w - keypoints_np[:,:,0]
         if self.gt_num_keypoints == 17:
             flip_index = [0,2,1,4,3,6,5,8,7,10,9,12,11,14,13,16,15]
-        else:
+        elif self.gt_num_keypoints == 15:
             flip_index = [1,0,3,2,5,4,7,6,9,8,11,10,12,13,14]
         keypoints_np = keypoints_np[:,flip_index]
         keypoints_np = keypoints_np.reshape(keypoints_np.shape[0],1,3*self.gt_num_keypoints)
@@ -297,12 +297,14 @@ class RandomFlip(object):
             # img_patch = np.array(img_patch)
             # import cv2
             # for k in keypoints:
+            #     # print(k)
             #     color1 = np.random.randint(0, 256, (3), dtype=int)
             #     k = k[0]
-            #     for j in range(17):
+            #     for j in range(15):
             #         cv2.circle(img_patch, (int(k[j*3]), int(k[j*3+1])), radius=3, color=(int(color1[0]),int(color1[1]),int(color1[2])), thickness=4)
             # # cv2.imwrite('./debug_img/img%d.jpg'%self.count, img)
             # cv2.imwrite('./debug_img/img_patch_%d.jpg'%self.count, img_patch)
+            # print('writed')
             # self.count += 1
             # if self.count == 10:
             #     exit()

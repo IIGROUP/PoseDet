@@ -33,7 +33,7 @@ def keypoints_nms(multi_scores,
         return pointsets, labels
 
     dets, keep = oks_nms(
-        torch.cat([pointsets, scores[:, None]], -1), iou_thr=nms_cfg['iou_thr'])
+        torch.cat([pointsets, scores[:, None]], -1), iou_thr=nms_cfg['iou_thr'],num_points=num_points)
 
     if max_num > 0:
         dets = dets[:max_num]
@@ -43,7 +43,7 @@ def keypoints_nms(multi_scores,
     return dets, labels[keep]
 
 
-def oks_nms(dets, iou_thr, device_id=None):
+def oks_nms(dets, iou_thr, device_id=None,num_points=17):
 
     if isinstance(dets, torch.Tensor):
         is_numpy = False
@@ -62,7 +62,7 @@ def oks_nms(dets, iou_thr, device_id=None):
     else:
         # torch.cuda.synchronize()
         # t1 = time.time()
-        inds = _oks_nms(dets_th, iou_thr)
+        inds = _oks_nms(dets_th, iou_thr, num_points)
 
         # import os
         # import numpy as np 
@@ -83,15 +83,20 @@ def oks_nms(dets, iou_thr, device_id=None):
 
     return dets[inds, :], inds
 
-def _oks_nms(dets, thresh):
-    sigmas = torch.tensor([.26, .25, .25, .35, .35, .79, .79, .72, .72, .62,.62, 1.07, 1.07, .87, .87, .89, .89], device=dets.device)/10.0
+def _oks_nms(dets, thresh, num_points):
+    if num_points==17:
+        sigmas = torch.tensor([.26, .25, .25, .35, .35, .79, .79, .72, .72, .62,.62, 1.07, 1.07, .87, .87, .89, .89], device=dets.device)/10.0
+        pointsets = dets[:,:-1]
+        pointsets = pointsets.view((pointsets.size()[0], -1, 3))
+        pointsets = pointsets[:,:,:2]
+    elif num_points==15:
+        sigmas = torch.tensor([.79, .79, .72, .72, .62, .62, 1.07, 1.07, .87, .87, .89, .89, .79, .79], device=dets.device)/10.0
+        pointsets = dets[:,:-4] #the last points did not used in oks computation
+        pointsets = pointsets.view((pointsets.size()[0], -1, 3))
+        pointsets = pointsets[:,:,:2]
+        
     vars = (sigmas * 2)**2
     vars = vars.unsqueeze(0).unsqueeze(0) #[1, 1, 17]
-
-    #get pointsets from dets, which are [N, num_points*2], where each pointset is [x1, y1, x2, y2...]
-    pointsets = dets[:,:-1]
-    pointsets = pointsets.view((pointsets.size()[0], -1, 3))
-    pointsets = pointsets[:,:,:2]
 
     w_all = torch.max(pointsets[:,:,0], dim=1)[0] - torch.min(pointsets[:,:,0], dim=1)[0]
     h_all = torch.max(pointsets[:,:,1], dim=1)[0] - torch.min(pointsets[:,:,1], dim=1)[0]

@@ -51,8 +51,8 @@ class CrowdPoseKeypoints(CocoDataset):
             x1, y1, w, h = ann['bbox']
             inter_w = max(0, min(x1 + w, img_info['width']) - max(x1, 0))
             inter_h = max(0, min(y1 + h, img_info['height']) - max(y1, 0))
-            if inter_w * inter_h == 0:
-                continue
+            # if inter_w * inter_h == 0:
+                # continue
             # if ann['area'] <= 0 or w < 1 or h < 1:
                 # continue
             if ann['category_id'] not in self.cat_ids:
@@ -63,7 +63,6 @@ class CrowdPoseKeypoints(CocoDataset):
             else:
                 gt_bboxes.append(bbox)
                 gt_labels.append(self.cat2label[ann['category_id']])
-                gt_masks_ann.append(ann['segmentation'])
                 gt_keypoints_ann.append(ann['keypoints'])
                 gt_keypoints_num_ann.append(ann['num_keypoints'])
 
@@ -146,7 +145,7 @@ class CrowdPoseKeypoints(CocoDataset):
         #     os.remove(zip_filename)
         # os.system('zip %s %s'%(zip_filename, ann_filename))
 
-        cocoGt = self.coco
+        cocoGt = COCO(self.ann_file)
         cocoDt = cocoGt.loadRes(ann_filename)
         coco_eval = COCOeval(cocoGt, cocoDt, 'keypoints')
 

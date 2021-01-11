@@ -27,7 +27,7 @@ class PoseDetDetector(SingleStageDetector):
             flip_direction = img_info[0]['flip_direction']
 
             poses = pose_mapping_back(poses, img_shape, scale_factor, flip,
-                                       flip_direction)
+                                       flip_direction, num_keypoints=self.bbox_head.num_keypoints)
             recovered_poses.append(poses)
         poses = torch.cat(recovered_poses, dim=0)
 

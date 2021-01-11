@@ -2,7 +2,7 @@ import torch
 import numpy as np
 
 
-def pose_flip(poses, img_shape, direction='horizontal'):
+def pose_flip(poses, img_shape, direction='horizontal', num_keypoints=17):
     assert direction == 'horizontal'
     poses_fliped = torch.zeros_like(poses)
     for i, kp in enumerate(poses):
@@ -13,8 +13,10 @@ def pose_flip(poses, img_shape, direction='horizontal'):
         elif direction == 'vertical':
             h = img_shape[0]
             kp[:,1] = h - kp[:,1]
-
-        idnex_map = [0,2,1,4,3,6,5,8,7,10,9,12,11,14,13,16,15]
+        if num_keypoints == 17:
+            idnex_map = [0,2,1,4,3,6,5,8,7,10,9,12,11,14,13,16,15]
+        elif num_keypoints==15:
+            idnex_map = [1,0,3,2,5,4,7,6,9,8,11,10,12,13,14]
         kp = kp[idnex_map]     
         poses_fliped[i] = kp.reshape(-1)
 
@@ -24,13 +26,14 @@ def pose_mapping_back(poses,
                       img_shape,
                       scale_factor,
                       flip,
-                      flip_direction='horizontal'):
+                      flip_direction='horizontal',
+                      num_keypoints=17):
     assert flip_direction=='horizontal'
 
     # new_poses = poses * poses.new_tensor(scale_factor[0])
     new_poses = poses
     if flip:
-        new_poses = pose_flip(new_poses, img_shape, flip_direction)
+        new_poses = pose_flip(new_poses, img_shape, flip_direction, num_keypoints=num_keypoints)
     return new_poses
 
 def computeOks(gt_pts, pts_preds, gt_bboxes=None, num_keypoints=17, number_keypoints_thr=1, normalize_factor=0):
@@ -40,7 +43,12 @@ def computeOks(gt_pts, pts_preds, gt_bboxes=None, num_keypoints=17, number_keypo
     oks = torch.zeros((len(gt_pts), len(pts_preds)), device=pts_preds.device)
     if len(gt_pts)==0:
         return oks
-    sigmas = torch.tensor([.26, .25, .25, .35, .35, .79, .79, .72, .72, .62,.62, 1.07, 1.07, .87, .87, .89, .89], device=pts_preds.device)/10.0
+    if num_keypoints==17:
+        sigmas = torch.tensor([.26, .25, .25, .35, .35, .79, .79, .72, .72, .62,.62, 1.07, 1.07, .87, .87, .89, .89], device=pts_preds.device)/10.0
+    elif num_keypoints==15: 
+        sigmas = torch.tensor([.79, .79, .72, .72, .62, .62, 1.07, 1.07, .87, .87, .89, .89, .79, .79], device=pts_preds.device)/10.0
+        gt_pts = gt_pts[:,:,:14*3]
+        pts_preds = pts_preds[:,:14*2]
 
     # sigmas = torch.from_numpy(self.kpt_oks_sigmas, device=pts_preds.device)
     vars = (sigmas * 2)**2

@@ -13,11 +13,15 @@ from PoseDet.utils import xfirst2yfirst
 
 @PIPELINES.register_module()
 class LoadKeypoints(object):
+    def __init__(self, fourteen2fifteen=False):
+        self.fourteen2fifteen = fourteen2fifteen
 
     def __call__(self, results):
         keypoints = results['ann_info']['keypoints']
         num_keypoints = results['ann_info']['num_keypoints']
-        results['gt_keypoints'] = keypoints
+        if self.fourteen2fifteen:
+            keypoints = self._fourteen2fifteen(keypoints)
+            results['gt_keypoints'] = keypoints
         results['gt_num_keypoints'] = num_keypoints
 
         return results
@@ -28,6 +32,32 @@ class LoadKeypoints(object):
                     f"color_type='{self.color_type}', "
                     f'file_client_args={self.file_client_args})')
         return repr_str
+    def _fourteen2fifteen(self, keypoints):
+        N = len(keypoints)
+        # if N==0:
+        #     print(keypoints)
+        #     exit()
+            # return 
+        _keypoints = np.array(keypoints).reshape([N, 14, 3])
+        l_shoulder = _keypoints[:,0,:]
+
+        r_shoulder = _keypoints[:,1,:]
+        l_hip = _keypoints[:,6,:]
+        r_hip = _keypoints[:,7,:]
+        index = _keypoints[:,:,2]
+        index[index==2] = 1
+        index = index[:,0] + index[:,1] + index[:,6] + index[:,7]
+        index[index==0] = 1
+        abdomen = (l_shoulder+r_shoulder+l_hip+r_hip)/index[...,None]
+
+        index[index<3] = 0
+        abdomen[:,2] = index
+
+        keypoints_fifteen = np.zeros([N, 15, 3])
+        keypoints_fifteen[:,:14,:] = _keypoints
+        keypoints_fifteen[:,14,:] = abdomen
+        keypoints_fifteen = keypoints_fifteen.reshape((N, 15*3)).tolist()
+        return keypoints_fifteen
 
 
 @PIPELINES.register_module()
