@@ -21,7 +21,7 @@ Requirements
 # A script with Annoconda
 conda create -name PoseDet
 conda install pytorch=1.3.1 cudatoolkit=9.2 torchvision=0.4.2 -c pytorch
-pip install mmcv==0.6.2
+pip install mmcv==0.6.2 --user
 git clone **
 cd mmdetection
 pip install -r requirements/build.txt
