@@ -57,21 +57,21 @@ def oks_nms(dets, iou_thr, device_id=None):
                         f'but got {type(dets)}')
 
     # execute cpu or cuda nms
-    # if dets_th.shape[0] == 0:
-    #     inds = dets_th.new_zeros(0, dtype=torch.long)
-    # else:
-    #     # torch.cuda.synchronize()
-    #     # t1 = time.time()
-    #     inds = _oks_nms(dets_th, iou_thr)
+    if dets_th.shape[0] == 0:
+        inds = dets_th.new_zeros(0, dtype=torch.long)
+    else:
+        # torch.cuda.synchronize()
+        # t1 = time.time()
+        inds = _oks_nms(dets_th, iou_thr)
 
-    #     import os
-    #     import numpy as np 
-    #     dets_np = dets_th.detach().cpu().numpy()
-    #     for i in range(501):
-    #         path = './debug_img2/%d.npy'%i
-    #         if not os.path.exists(path):
-    #             np.save(path, dets_np)
-    #             break
+        # import os
+        # import numpy as np 
+        # dets_np = dets_th.detach().cpu().numpy()
+        # for i in range(501):
+        #     path = './debug_img2/%d.npy'%i
+        #     if not os.path.exists(path):
+        #         np.save(path, dets_np)
+        #         break
 
         # inds = _oks_fast_nms(dets_th, iou_thr)
 
