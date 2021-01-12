@@ -21,7 +21,7 @@ class LoadKeypoints(object):
         num_keypoints = results['ann_info']['num_keypoints']
         if self.fourteen2fifteen:
             keypoints = self._fourteen2fifteen(keypoints)
-            results['gt_keypoints'] = keypoints
+        results['gt_keypoints'] = keypoints
         results['gt_num_keypoints'] = num_keypoints
 
         return results
