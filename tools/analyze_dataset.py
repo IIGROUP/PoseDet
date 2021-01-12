@@ -1,9 +1,11 @@
 import json
 import os
 
-data_root = '/data/ly/coco/'
+# data_root = '/mnt/data/tcy/coco/'
+data_root = '/mnt/data/tcy/CrowdPose/'
 
-file = 'person_keypoints_val2017.json'
+# file = 'person_keypoints_val2017.json'
+file = 'crowdpose_train.json'
 
 file_path = os.path.join(data_root, 'annotations', file)
 
@@ -14,24 +16,32 @@ print(dataset.keys()) # ['info', 'licenses', 'images', 'annotations', 'categorie
 images = dataset['images']
 annotations = dataset['annotations'] #['segmentation', 'num_keypoints', 'area', 'iscrowd', 'keypoints', 'image_id', 'bbox', 'category_id', 'id']
 # print(annotations[0].keys())
+print(dataset['categories'])
 
-new_images = []
-image_ids = []
-small = 500
-for img in images[:small]:
-    new_images.append(img)
-    image_ids.append(img['id'])
-new_ann = []
-for ann in annotations:
-    if ann['image_id'] in image_ids:
-        new_ann.append(ann)
 
-dataset['images'] = new_images
-dataset['annotations'] = new_ann
+# saved_file = 'person_keypoints_val2017_small500.json'
+# file_path = os.path.join(data_root, 'annotations', saved_file)
 
-saved_file = 'person_keypoints_val2017_small500.json'
+# with open(file_path, 'w') as f:
+#     json.dump(dataset, f)
+
+data_root = '/mnt/data/tcy/CrowdPose/'
+file = 'crowdpose_val.json'
+file_path = os.path.join(data_root, 'annotations', file)
+with open(file_path) as f:
+    dataset2 = json.load(f)
+
+images2 = dataset2['images']
+annotations2 = dataset2['annotations'] #['segmentation', 'num_keypoints', 'area', 'iscrowd', 'keypoints', 'image_id', 'bbox', 'category_id', 'id']
+
+images3 = images + images2
+annotations3 = annotations+annotations2
+
+dataset['images'] = images3
+dataset['annotations'] = annotations3
+
+saved_file = 'crowdpose_trainval.json'
 file_path = os.path.join(data_root, 'annotations', saved_file)
 
 with open(file_path, 'w') as f:
     json.dump(dataset, f)
-
