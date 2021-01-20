@@ -6,7 +6,7 @@ from imantics import Polygons, Mask
 import json
 from tqdm import tqdm
 
-small_data_num = 500 #从train folder里挑small_data_num出来当train, val set， 从test folder里挑small_data_num当test set
+small_data_num = 500 
 
 
 def get_file_names(folder, SMALL=False):

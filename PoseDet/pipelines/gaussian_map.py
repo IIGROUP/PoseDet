@@ -87,7 +87,6 @@ class GaussianMap(object):
         return heatmap_weight
 
     def get_gaussian_map(self, output_scale, keypoints, stride):
-        #steal from https://github.com/HRNet/HigherHRNet-Human-Pose-Estimation
         hms = np.zeros((self.num_keypoints, output_scale, output_scale),
                        dtype=np.float32)
         sigma = self.sigma

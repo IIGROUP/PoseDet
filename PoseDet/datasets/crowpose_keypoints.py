@@ -9,8 +9,6 @@ import tempfile
 import mmcv
 import numpy as np
 from mmcv.utils import print_log
-# from pycocotools.coco import COCO
-# from pycocotools.cocoeval import COCOeval
 
 from .CrowdPose_toolkits.coco import COCO
 from .CrowdPose_toolkits.cocoeval import COCOeval

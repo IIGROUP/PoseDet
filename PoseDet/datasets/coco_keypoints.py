@@ -15,10 +15,8 @@ from terminaltables import AsciiTable
 
 from mmdet.core import eval_recalls
 from collections import defaultdict
-# from projects.metrix import *
 import gc
 import os
-# from RepPoints.utils import eighteen2seventeen, yfirst2xfirst, add_keypoints_flag
 from PoseDet.utils import add_keypoints_flag
 import json
 

@@ -5,7 +5,6 @@ from mmcv.cnn import ConvModule, bias_init_with_prob, normal_init
 
 from mmdet.core import (PointGenerator, build_assigner, build_sampler,
                         images_to_levels, multi_apply, unmap,
-                            # multiclass_nms
                         )
 from PoseDet.keypoints_nms import keypoints_nms
 
