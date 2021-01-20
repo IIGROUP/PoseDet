@@ -18,10 +18,8 @@ def single_gpu_test(model,
                     out_dir=None,
                     show_score_thr=0.3,
                     SHOW_POSE=False):
-    # print(SHOW_POSE)
     if SHOW_POSE:
         show = True
-    # exit()
     model.eval()
     results = []
     dataset = data_loader.dataset

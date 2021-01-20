@@ -39,7 +39,6 @@ class CenterRandomCropXiao(object):
         left = the_box[0]
         top = the_box[1]
 
-        # TODO(xiao): augment and expand
         # scale = np.clip(np.random.randn(), -1.0, 1.0) * self.scale_factor + 1.0
         # rot = np.clip(np.random.randn(), -1.0, 1.0) * self.rot_factor
         scale = random.uniform(1.0 - self.scale_factor, 1.0 + self.scale_factor)
@@ -66,7 +65,6 @@ class CenterRandomCropXiao(object):
         keypoints = np.array(keypoints)[mask]
         gt_num_keypoints = np.array(gt_num_keypoints)[mask]
 
-        # TODO(xiao): image and label transform
         # image
         img_patch, trans = gen_patch_image_from_box_cv(img, c_x, c_y, exp_w, exp_h, self.patch_width,
                                                        self.patch_height, False, 1.0, rot)
@@ -82,8 +80,6 @@ class CenterRandomCropXiao(object):
         for n_jt in range(len(boxes)):
             boxes[n_jt, 0:2] = trans_point2d(boxes[n_jt, 0:2], trans)
         boxes = boxes.reshape(num_box, -1)
-        # TODO(xiao): boxes are useless due to rotation augmentation
-        # TODO(xiao): clip boxes and keypoints
 
         # if False:
         #     from mmcv_custom.vis import vis_one_image_opencv

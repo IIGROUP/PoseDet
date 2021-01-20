@@ -1,7 +1,7 @@
 import argparse
 import os, sys
 sys.path.append(os.getcwd())
-os.environ["CUDA_VISIBLE_DEVICES"] = "2" 
+os.environ["CUDA_VISIBLE_DEVICES"] = "1" 
 import mmcv
 import torch
 from mmcv import Config, DictAction
@@ -53,7 +53,7 @@ def parse_args():
     parser.add_argument(
         '--show-score-thr',
         type=float,
-        default=0.5,
+        default=0.3,
         help='score threshold (default: 0.3)')
     parser.add_argument(
         '--gpu-collect',

@@ -28,7 +28,6 @@ train_pipeline = [
     dict(type='RandomFlip', flip_ratio=0.5, with_keypoints=True, gt_num_keypoints=15),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
-    # dict(type='GaussianMap', sigma=7.0, num_keypoints=15, pos_weight=1, SCALE=True, scale_factor=100),
     dict(type='GaussianMap', strides=[8,16,32,64], num_keypoints=15, sigma=2),
     dict(type='FormatBundleKeypoints'),
     dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels', 
@@ -54,7 +53,7 @@ data = dict(
         ),
     test=dict(
         type=dataset_type,
-        ann_file=data_root + 'annotations/crowdpose_val.json',
+        ann_file=data_root + 'annotations/crowdpose_test.json',
         img_prefix=data_root + 'images/'
         )
     )
@@ -72,7 +71,12 @@ train_cfg = dict(
     refine=dict(assigner=dict(num_keypoints=15)),    
     cls=dict(assigner=dict(num_keypoints=15)),
     )
-
+test_cfg = dict(
+    nms_pre=500,
+    min_bbox_size=0,
+    score_thr=0.05,
+    nms=dict(type='keypoints_nms', iou_thr=0.3),
+    max_per_img=100)
 
 exp_name = 'PoseDet_DLA34_CrowdPose'
 work_dir = './output/' + exp_name

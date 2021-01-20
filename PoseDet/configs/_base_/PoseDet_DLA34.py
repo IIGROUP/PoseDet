@@ -106,6 +106,5 @@ test_cfg = dict(
     nms_pre=500,
     min_bbox_size=0,
     score_thr=0.05,
-    # nms=dict(type='keypoints_nms', iou_thr=0.2),
-    nms=dict(type='keypoints_nms', iou_thr=0.3),
+    nms=dict(type='keypoints_nms', iou_thr=0.2),
     max_per_img=100)
