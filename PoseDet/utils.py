@@ -1,6 +1,11 @@
 import torch
 import numpy as np
+import cv2
 
+# coco
+limbs = [[3,1], [1,0], [0,2], [2,4],
+          [0,17], [17,5], [17,6], [5,7], [7,9], [6,8], [8,10],
+          [17,11], [17,12], [11,13], [13,15], [17,12], [12,14], [14,16]]
 
 def pose_flip(poses, img_shape, direction='horizontal', num_keypoints=17):
     assert direction == 'horizontal'
@@ -86,6 +91,29 @@ def computeOks(gt_pts, pts_preds, gt_bboxes=None, num_keypoints=17, number_keypo
 
     return oks
 
+def show_pose(image, poses, thickness=2):
+    #poses: array[N, k*3] 
+    assert poses.shape[1] == 51 #for coco format only
+    image = image.copy()
+    for pose in poses:
+        color = np.random.rand(3) * 255
+        # color = np.array(color).astype(np.uint8)
+        color = (int(color[0]), int(color[1]), int(color[2]))
+        # print(color)
+        #add neck
+        keypoints = np.array(pose).reshape(-1, 3)
+        keypoints_ = np.zeros((18, 3))
+        neck = (keypoints[5,:2]+keypoints[6,:2])/2
+        keypoints_[:17] = keypoints
+        keypoints_[17,:2] = neck
+        keypoints_[17,2] = 2
+        #draw pose
+        for i in range(len(limbs)):
+            limb = limbs[i]
+            x1, y1 = keypoints_[limb[0]][:2]
+            x2, y2 = keypoints_[limb[1]][:2]
+            cv2.line(image, (int(x1), int(y1)), (int(x2), int(y2)), color=color, thickness=thickness)
+    return image
 
 #convert a set of keypoints fron 18 to 17
 #input:[18*2]

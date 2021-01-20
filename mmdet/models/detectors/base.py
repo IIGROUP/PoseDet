@@ -8,8 +8,8 @@ from mmcv.utils import print_log
 
 from mmdet.core import auto_fp16
 from mmdet.utils import get_root_logger
-
-
+import cv2, os
+from PoseDet.utils import show_pose
 class BaseDetector(nn.Module, metaclass=ABCMeta):
     """Base class for detectors"""
 
@@ -160,7 +160,8 @@ class BaseDetector(nn.Module, metaclass=ABCMeta):
                     win_name='',
                     show=False,
                     wait_time=0,
-                    out_file=None):
+                    out_file=None,
+                    SHOW_POSE=False):
         """Draw `result` over `img`.
 
         Args:
@@ -186,52 +187,64 @@ class BaseDetector(nn.Module, metaclass=ABCMeta):
         """
         img = mmcv.imread(img)
         img = img.copy()
-        if isinstance(result, tuple):
-            bbox_result, segm_result = result
-            if isinstance(segm_result, tuple):
-                segm_result = segm_result[0]  # ms rcnn
-        else:
-            bbox_result, segm_result = result, None
-        bboxes = np.vstack(bbox_result)
-        labels = [
-            np.full(bbox.shape[0], i, dtype=np.int32)
-            for i, bbox in enumerate(bbox_result)
-        ]
-        labels = np.concatenate(labels)
-        # draw segmentation masks
-        if segm_result is not None and len(labels) > 0:  # non empty
-            segms = mmcv.concat_list(segm_result)
-            inds = np.where(bboxes[:, -1] > score_thr)[0]
-            np.random.seed(42)
-            color_masks = [
-                np.random.randint(0, 256, (1, 3), dtype=np.uint8)
-                for _ in range(max(labels) + 1)
-            ]
-            for i in inds:
-                i = int(i)
-                color_mask = color_masks[labels[i]]
-                mask = segms[i]
-                img[mask] = img[mask] * 0.5 + color_mask * 0.5
-        # if out_file specified, do not show image in window
-        if out_file is not None:
-            show = False
-        # draw bounding boxes
-        mmcv.imshow_det_bboxes(
-            img,
-            bboxes,
-            labels,
-            class_names=self.CLASSES,
-            score_thr=score_thr,
-            bbox_color=bbox_color,
-            text_color=text_color,
-            thickness=thickness,
-            font_scale=font_scale,
-            win_name=win_name,
-            show=show,
-            wait_time=wait_time,
-            out_file=out_file)
+        show_index = result[:,-1] > score_thr
+        img = show_pose(img, result[show_index,:-1])
+        out_file_split = out_file.split('/')
+        out_file_folder = out_file_split[0]
+        for s in out_file_split[1:-1]:
+            out_file_folder = os.path.join(out_file_folder, s)
+        if not os.path.exists(out_file_folder):
+            os.makedirs(out_file_folder)
+        cv2.imwrite(out_file, img)
+        # if isinstance(result, tuple):
+        #     bbox_result, segm_result = result
+        #     if isinstance(segm_result, tuple):
+        #         segm_result = segm_result[0]  # ms rcnn
+        # else:
+        #     bbox_result, segm_result = result, None
+        # bboxes = np.vstack(bbox_result)
+        # labels = [
+        #     np.full(bbox.shape[0], i, dtype=np.int32)
+        #     for i, bbox in enumerate(bbox_result)
+        # ]
+        # labels = np.concatenate(labels)
+        # # draw segmentation masks
+        # if segm_result is not None and len(labels) > 0:  # non empty
+        #     segms = mmcv.concat_list(segm_result)
+        #     inds = np.where(bboxes[:, -1] > score_thr)[0]
+        #     np.random.seed(42)
+        #     color_masks = [
+        #         np.random.randint(0, 256, (1, 3), dtype=np.uint8)
+        #         for _ in range(max(labels) + 1)
+        #     ]
+        #     for i in inds:
+        #         i = int(i)
+        #         color_mask = color_masks[labels[i]]
+        #         mask = segms[i]
+        #         img[mask] = img[mask] * 0.5 + color_mask * 0.5
+        # # if out_file specified, do not show image in window
+        # if out_file is not None:
+        #     show = False
+        # # draw bounding boxes
+        # print(out_file)
+        # exit()
+        # mmcv.imshow_det_bboxes(
+        #     img,
+        #     result[:,:5], #TO remove
+        #     result[:,0], #TO remove
+        #     class_names=self.CLASSES,
+        #     score_thr=score_thr,
+        #     bbox_color=bbox_color,
+        #     text_color=text_color,
+        #     thickness=thickness,
+        #     font_scale=font_scale,
+        #     win_name=win_name,
+        #     # show=show,
+        #     show=False,
+        #     wait_time=wait_time,
+        #     out_file=out_file)
 
-        if not (show or out_file):
-            warnings.warn('show==False and out_file is not specified, only '
-                          'result image will be returned')
-            return img
+        # if not (show or out_file):
+        #     warnings.warn('show==False and out_file is not specified, only '
+        #                   'result image will be returned')
+        return img

@@ -42,16 +42,18 @@ def parse_args():
     parser.add_argument(
         '--eval',
         type=str,
+        default='bbox',
         nargs='+',
         help='evaluation metrics, which depends on the dataset, e.g., "bbox",'
         ' "segm", "proposal" for COCO, and "mAP", "recall" for PASCAL VOC')
     parser.add_argument('--show', action='store_true', help='show results')
+    parser.add_argument('--show-pose', action='store_true', help='show results')
     parser.add_argument(
         '--show-dir', help='directory where painted images will be saved')
     parser.add_argument(
         '--show-score-thr',
         type=float,
-        default=0.3,
+        default=0.5,
         help='score threshold (default: 0.3)')
     parser.add_argument(
         '--gpu-collect',
@@ -83,14 +85,14 @@ def main():
     else:
         args.config = config_file
 
-    assert args.out or args.eval or args.format_only or args.show \
-        or args.show_dir, \
-        ('Please specify at least one operation (save/eval/format/show the '
-         'results / save the results) with the argument "--out", "--eval"'
-         ', "--format-only", "--show" or "--show-dir"')
+    # assert args.out or args.eval or args.format_only or args.show \
+    #     or args.show_dir, \
+    #     ('Please specify at least one operation (save/eval/format/show the '
+    #      'results / save the results) with the argument "--out", "--eval"'
+    #      ', "--format-only", "--show" or "--show-dir"')
 
-    if args.eval and args.format_only:
-        raise ValueError('--eval and --format_only cannot be both specified')
+    # if args.eval and args.format_only:
+    #     raise ValueError('--eval and --format_only cannot be both specified')
 
     if args.out is not None and not args.out.endswith(('.pkl', '.pickle')):
         raise ValueError('The output file must be a pkl file.')
@@ -137,7 +139,7 @@ def main():
     if not distributed:
         model = MMDataParallel(model, device_ids=[0])
         outputs = single_gpu_test(model, data_loader, args.show, args.show_dir,
-                                  args.show_score_thr)
+                                  args.show_score_thr, SHOW_POSE=args.show_pose)
     else:
         model = MMDistributedDataParallel(
             model.cuda(),

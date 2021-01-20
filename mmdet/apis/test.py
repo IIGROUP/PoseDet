@@ -16,7 +16,12 @@ def single_gpu_test(model,
                     data_loader,
                     show=False,
                     out_dir=None,
-                    show_score_thr=0.3):
+                    show_score_thr=0.3,
+                    SHOW_POSE=False):
+    # print(SHOW_POSE)
+    if SHOW_POSE:
+        show = True
+    # exit()
     model.eval()
     results = []
     dataset = data_loader.dataset
@@ -67,7 +72,8 @@ def single_gpu_test(model,
                     result,
                     show=show,
                     out_file=out_file,
-                    score_thr=show_score_thr)
+                    score_thr=show_score_thr,
+                    SHOW_POSE=SHOW_POSE)
 
         # encode mask results
         if isinstance(result, tuple):
