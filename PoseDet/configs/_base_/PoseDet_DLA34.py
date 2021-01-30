@@ -2,6 +2,7 @@ norm_cfg = dict(type='GN', num_groups=32, requires_grad=True)
 model = dict( 
     type='PoseDetDetector',
     pretrained='pretrained/dla34-ba72cf86.pth',
+    # pretrained='open-mmlab://msra/hrnetv2_w32',
     backbone=dict(
         type='DLA',
         return_levels=True,

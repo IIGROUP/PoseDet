@@ -126,4 +126,46 @@ def _oks_nms(dets, thresh, num_points):
     keep = torch.stack(keep)    
     return keep
     
+def _matrix_oks_nms(dets, thresh, num_points):
+    if num_points==17:
+        sigmas = torch.tensor([.26, .25, .25, .35, .35, .79, .79, .72, .72, .62,.62, 1.07, 1.07, .87, .87, .89, .89], device=dets.device)/10.0
+        pointsets = dets[:,:-1]
+        pointsets = pointsets.view((pointsets.size()[0], -1, 3))
+        pointsets = pointsets[:,:,:2]
+    elif num_points==15:
+        sigmas = torch.tensor([.79, .79, .72, .72, .62, .62, 1.07, 1.07, .87, .87, .89, .89, .79, .79], device=dets.device)/10.0
+        pointsets = dets[:,:-4] #the last points did not used in oks computation
+        pointsets = pointsets.view((pointsets.size()[0], -1, 3))
+        pointsets = pointsets[:,:,:2]
+        
+    vars = (sigmas * 2)**2
+    vars = vars.unsqueeze(0).unsqueeze(0) #[1, 1, 17]
+
+    w_all = torch.max(pointsets[:,:,0], dim=1)[0] - torch.min(pointsets[:,:,0], dim=1)[0]
+    h_all = torch.max(pointsets[:,:,1], dim=1)[0] - torch.min(pointsets[:,:,1], dim=1)[0]
+    areas = w_all*h_all
+    areas = areas.clamp(32*32)
+    areas = (areas.unsqueeze(0)+areas.unsqueeze(1))/2
+    areas = areas.unsqueeze(-1) #[points_num, points_num, 1]
+
+    distance = ((pointsets.unsqueeze(0) - pointsets.unsqueeze(1))**2).sum(dim=-1) # [m, m, points_num]
+    oks = torch.exp(-distance/vars/areas).mean(dim=-1)
+
+    scores = dets[:,-1]
+
+    keep = []
+    index = scores.sort(descending=True)[1]  
+
+    while index.size()[0] >0:
+        i = index[0]       # every time the first is the biggst, and add it directly
+        keep.append(i)
+        if index.size()[0] == 1:
+            break       
+        oks_selected = torch.index_select(oks[i], 0, index)
+        idx = torch.where(oks_selected<=thresh)[0]
+         
+        index = index[idx]
+
+    keep = torch.stack(keep)    
+    return keep
 
