@@ -47,14 +47,18 @@ You are supposed to download the imagenet pre-trained models, then put them into
 - [HRNet-W32](https://open-mmlab.s3.ap-northeast-2.amazonaws.com/pretrain/third_party/hrnetv2_w32-dc9eeb4f.pth)
 - [HRNer-W48](https://drive.google.com/file/d/1xk3tevawZ-XOK0y5DJi3TUsleM6B6e6p/view?usp=sharing)
 
-#### train
+#### Dataset preparation
+
+Download the required dataset and modify the path to the dataset (data_root) in `PoseDet/configs/_base_/dataset_coco.py`
+
+#### Train
 
 ```bash
 #Replace config_file with the path to the config file (e.g., ./PoseDet/config/COCO/PoseDet_DLA34_coco.py)
 python -m torch.distributed.launch --nproc_per_node=8  tools/train.py --launcher pytorch --config config_file
 ```
 
-#### test
+#### Test
 
 ```bash
 #Replace config_file and checkpoint_file

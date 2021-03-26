@@ -47,7 +47,7 @@ test_pipeline = [
         ])
 ]
 dataset_type = 'CocoKeypoints'
-data_root = '/mnt/dataset/tcy/coco/'
+data_root = '/mnt/data/tcy/coco/'
 data = dict(
     samples_per_gpu=12,
     workers_per_gpu=4,
@@ -64,7 +64,6 @@ data = dict(
         pipeline=test_pipeline),
     test=dict(
         type=dataset_type,
-        # ann_file=data_root + 'annotations/person_keypoints_val2017_small500.json',
         ann_file=data_root + 'annotations/person_keypoints_val2017.json',
         img_prefix=data_root + 'val2017/',
         # img_prefix=data_root + 'test2017/',

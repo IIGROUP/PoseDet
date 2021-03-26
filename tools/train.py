@@ -2,7 +2,7 @@ import argparse
 import copy
 import os, sys
 sys.path.append(os.getcwd())
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,2,5,6" 
+os.environ["CUDA_VISIBLE_DEVICES"] = "1,4,5,6" 
 import warnings
 warnings.filterwarnings('ignore')
 import os.path as osp
@@ -67,6 +67,7 @@ def parse_args():
         '--autoscale-lr',
         action='store_true',
         help='automatically scale lr with the number of gpus')
+    parser.add_argument('--image_per_gpu', type=int, default=None, help='images per gpu')
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
@@ -77,6 +78,7 @@ def parse_args():
 def main():
     config_file = './PoseDet/configs/PoseDet.py'
     args = parse_args()
+
     if args.config:
         config_file = args.config
     else:
@@ -88,6 +90,9 @@ def main():
     # set cudnn_benchmark
     if cfg.get('cudnn_benchmark', False):
         torch.backends.cudnn.benchmark = True
+
+    if args.image_per_gpu:
+        cfg.data.workers_per_gpu = args.image_per_gpu
 
     cfg.find_unused_parameters = True
 

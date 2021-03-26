@@ -40,6 +40,7 @@ norm_cfg = dict(type='GN', num_groups=32, requires_grad=True)
 model = dict(
     pretrained='pretrained/hrnetv2_w32-dc9eeb4f.pth',
     backbone=dict(
+        _delete_=True,
         type='HRNet',
         norm_cfg=dict(type='BN', requires_grad=True),
         norm_eval=False,
@@ -69,6 +70,7 @@ model = dict(
                 num_blocks=(4, 4, 4, 4),
                 num_channels=(32, 64, 128, 256)))),
     neck=dict(
+        _delete_=True,
         type='HRFPN',
         in_channels=[32, 64, 128, 256],
         out_channels=channels,
