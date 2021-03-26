@@ -19,7 +19,8 @@ This repository is based on [mmdetection2.1.0](https://mmdetection.readthedocs.i
 
 ```bash
 # A script with Annoconda
-conda create -name PoseDet
+conda create -n PoseDet python=3.7
+conda activate PoseDet
 conda install pytorch=1.3.1 cudatoolkit=9.2 torchvision=0.4.2 -c pytorch
 pip install mmcv==0.6.2 --user
 cd PoseDet_mmdetection
