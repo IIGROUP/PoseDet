@@ -47,7 +47,7 @@ test_pipeline = [
         ])
 ]
 dataset_type = 'CocoKeypoints'
-data_root = '/mnt/data/tcy/coco/'
+data_root = '/mnt/dataset/tcy/coco/'
 data = dict(
     samples_per_gpu=12,
     workers_per_gpu=4,

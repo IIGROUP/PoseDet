@@ -2,7 +2,7 @@ import argparse
 import copy
 import os, sys
 sys.path.append(os.getcwd())
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,2,8,9" 
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,2,5,6" 
 import warnings
 warnings.filterwarnings('ignore')
 import os.path as osp
