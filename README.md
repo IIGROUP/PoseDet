@@ -11,9 +11,7 @@ This repository is based on [mmdetection2.1.0](https://mmdetection.readthedocs.i
 ##### Requirements
 
 - Linux
-- Python 3.6+
-- PyTorch 1.3+
-- CUDA 9.2
+- Python 3.6+, PyTorch 1.3.1, CUDA 9.2 on V100 or GTX 1080 Ti （Pytorch 1.7.1, CUDA 11.1, on RTX 3090 is also supported, other versions are not tested）
 - GCC 5+
 - Annoconda
 
@@ -55,7 +53,8 @@ Download the required dataset and modify the path to the dataset (data_root) in 
 
 ```bash
 #Replace config_file with the path to the config file (e.g., ./PoseDet/config/COCO/PoseDet_DLA34_coco.py)
-python -m torch.distributed.launch --nproc_per_node=8  tools/train.py --launcher pytorch --config config_file
+#Config image_per_gpu in terms of the memory limitation, batch size = image_per_gpu * nproc_per_node. The default batch size 32 is most likely the best.
+python -m torch.distributed.launch --nproc_per_node=8  tools/train.py --launcher pytorch --config config_file --image_per_gpu 4
 ```
 
 #### Test
