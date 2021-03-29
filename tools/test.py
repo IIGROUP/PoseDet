@@ -1,7 +1,7 @@
 import argparse
 import os, sys
 sys.path.append(os.getcwd())
-os.environ["CUDA_VISIBLE_DEVICES"] = "1" 
+os.environ["CUDA_VISIBLE_DEVICES"] = "0" 
 import mmcv
 import torch
 from mmcv import Config, DictAction
