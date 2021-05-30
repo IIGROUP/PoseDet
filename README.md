@@ -6,7 +6,7 @@
 
 ## Installation
 
-This repository is based on [mmdetection2.1.0](https://mmdetection.readthedocs.io/en/v2.1.0/).  To run PoseDet, you are supposed to install mmdetection.
+This repository is based on [mmdetection2.1.0](https://mmdetection.readthedocs.io/en/v2.1.0/).  To run PoseDet, you are supposed to install mmdetection  first.
 
 ##### Requirements
 
