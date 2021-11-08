@@ -1,8 +1,10 @@
 # PoseDet: Towards Real-time Multi-person Pose Estimation
 
-## Description
+Official PyTorch implementation for **PoseDet: Fast Multi-Person Pose Estimation Using Pose Embedding**. A simple system that performs real-time multi-person pose estimation.
 
-##### A simple system that performs real-time multi-person pose estimation at real-time inference speed.
+<p align="center">
+<img src="/docs/pipeline.png"/> 
+</p>
 
 ## Installation
 
@@ -13,10 +15,9 @@ This repository is based on [mmdetection2.1.0](https://mmdetection.readthedocs.i
 - Linux
 - Python 3.6+, PyTorch 1.3.1, CUDA 9.2 on V100 or GTX 1080 Ti （Pytorch 1.7.1, CUDA 11.1, on RTX 3090 is also supported, other versions are not tested）
 - GCC 5+
-- Annoconda
 
 ```bash
-# A script with Annoconda
+# A script with Anaconda
 cd ./PoseDet_mmdetection
 # Create env of conda
 conda create -n PoseDet python=3.7
@@ -25,7 +26,7 @@ conda activate PoseDet
 # Install pytorch
 conda install pytorch=1.3.1 cudatoolkit=9.2 torchvision=0.4.2 -c pytorch
 
-# Install mmcv, requirements, and coco api
+# Install mmcv, coco api, and other packages in requirements.
 pip install mmcv==0.6.2 --user
 pip install -r requirements/build.txt
 #TO isntall coco api, you can also download the package and install it localy via python setup.py develop
@@ -70,5 +71,20 @@ python tools/test.py --config config_file --checkpoint checkpoint_file
 
 For multi-scale testing and flip, you are supposed to modify the config file (`cfg.test_pipeline.MultiScaleFlipAug`)
 
+<p align="center">
+<img src="/docs/results.jpg"/> 
+</p>
 
+## Citation
+
+If you find our work helpful for your research, please consider to cite:
+
+```bibtex
+@article{tian2021posedet,
+  title={PoseDet: Fast Multi-Person Pose Estimation Using Pose Embedding},
+  author={Tian, Chenyu and Yu, Ran, and Zhao, Xinyuan, and Xia, Weihao and Wang, Haoqian and Yang, Yujiu},
+  journal={arxiv preprint arxiv:2107.10466},
+  year={2021}
+}
+```
 
