@@ -71,10 +71,6 @@ python tools/test.py --config config_file --checkpoint checkpoint_file
 
 For multi-scale testing and flip, you are supposed to modify the config file (`cfg.test_pipeline.MultiScaleFlipAug`)
 
-<p align="center">
-<img src="/docs/results.jpg"/> 
-</p>
-
 ## Citation
 
 If you find our work helpful for your research, please consider to cite:
